@@ -42,7 +42,8 @@
         }
 
         .dropdown-container.open {
-            max-height: 250px;
+            /* Perbesar max-height karena menu bertambah */
+            max-height: 500px; 
         }
     </style>
     @stack('styles')
@@ -80,14 +81,14 @@
                 <button onclick="toggleDropdown('masterDropdown')" id="btn-masterDropdown"
                     class="w-full flex items-center justify-between px-6 py-3 text-sm text-orange-50 hover:bg-white/10 transition group">
                     <div class="flex items-center">
-                        <i class="fas fa-database w-6"></i>
-                        <span class="font-semibold uppercase text-xs tracking-wider">Master Data</span>
+                        <i class="fas fa-cubes w-6"></i>
+                        <span class="font-semibold uppercase text-xs tracking-wider">Apps & Tools</span>
                     </div>
                     <i class="fas fa-chevron-right text-[10px] transition-transform duration-200"></i>
                 </button>
 
                 <div id="masterDropdown"
-                    class="dropdown-container bg-orange-700/40 {{ request()->routeIs('admin.gallery.*') || request()->routeIs('admin.scanner') ? 'open' : '' }}">
+                    class="dropdown-container bg-orange-700/40 {{ request()->routeIs('admin.gallery.*') || request()->routeIs('admin.scanner') || request()->routeIs('admin.photobooth') || request()->routeIs('tools.*') ? 'open' : '' }}">
 
                     {{-- Menu Gallery --}}
                     <a href="{{ route('admin.gallery.index') }}"
@@ -106,6 +107,22 @@
                         class="{{ request()->routeIs('admin.photobooth') ? 'sidebar-active text-white' : 'text-orange-100' }} flex items-center pl-14 pr-6 py-2 text-sm hover:bg-white/10 transition">
                         <i class="fas fa-camera-retro w-5 text-xs"></i> <span>Photobooth AI</span>
                     </a>
+
+                    {{-- Separator Kecil --}}
+                    <div class="border-t border-white/10 my-1 mx-6"></div>
+
+                    {{-- MENU BARU: Quiz Manager (Admin) --}}
+                    <a href="{{ route('tools.quiz_manager') }}"
+                        class="{{ request()->routeIs('tools.quiz_manager') ? 'sidebar-active text-white' : 'text-orange-100' }} flex items-center pl-14 pr-6 py-2 text-sm hover:bg-white/10 transition">
+                        <i class="fas fa-file-pen w-5 text-xs"></i> <span>Quiz Manager</span>
+                    </a>
+
+                    {{-- MENU BARU: Play Game (User) --}}
+                    <a href="{{ route('tools.minigame') }}"
+                        class="{{ request()->routeIs('tools.minigame') ? 'sidebar-active text-white' : 'text-orange-100' }} flex items-center pl-14 pr-6 py-2 text-sm hover:bg-white/10 transition">
+                        <i class="fas fa-gamepad w-5 text-xs"></i> <span>LPS Smart Quiz</span>
+                    </a>
+
                 </div>
             </div>
         </nav>

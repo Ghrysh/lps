@@ -1,92 +1,396 @@
-
-
-<?php $__env->startSection('title', 'Dashboard LPS'); ?>
+<?php $__env->startSection('title', 'Dashboard Analitik'); ?>
 
 <?php $__env->startSection('content'); ?>
-    
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Monitoring</h2>
-        <p class="text-sm text-slate-500">Ringkasan data operasional Lembaga Penjamin Simpanan (LPS)</p>
+    <style>
+        /* Custom Gradients for Cards */
+        .card-blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        .card-amber {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+        }
+
+        .card-teal {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .card-rose {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        /* Tab Styles */
+        .tab-active {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            color: #1e293b;
+        }
+
+        .tab-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* Mobile Table Fixes */
+        .card-row {
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-row:first-child {
+            border-top: none;
+        }
+
+        .tbl-desktop {
+            display: none;
+        }
+
+        .tbl-mobile {
+            display: block;
+        }
+
+        @media (min-width: 768px) {
+            .tbl-desktop {
+                display: block;
+            }
+
+            .tbl-mobile {
+                display: none;
+            }
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4" x-data="{ dateFilter: 'semua' }">
+
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">
+                Dashboard Analitik
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm">
+                Monitor aktivitas & interaksi pengunjung secara real-time
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
+            <div class="flex gap-2 items-center flex-wrap">
+
+                <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+
+                    <button @click="dateFilter = 'today'"
+                        :class="dateFilter === 'today' ? 'bg-emerald-600 text-white shadow-sm font-bold' :
+                            'text-slate-500 hover:bg-slate-100 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-md transition-all duration-200">
+                        Hari Ini
+                    </button>
+
+                    <button @click="dateFilter = '7_hari'"
+                        :class="dateFilter === '7_hari' ? 'bg-emerald-600 text-white shadow-sm font-bold' :
+                            'text-slate-500 hover:bg-slate-100 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-md transition-all duration-200">
+                        7 Hari
+                    </button>
+
+                    <button @click="dateFilter = '30_hari'"
+                        :class="dateFilter === '30_hari' ? 'bg-emerald-600 text-white shadow-sm font-bold' :
+                            'text-slate-500 hover:bg-slate-100 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-md transition-all duration-200">
+                        30 Hari
+                    </button>
+
+                    <button @click="dateFilter = 'semua'"
+                        :class="dateFilter === 'semua' ? 'bg-emerald-600 text-white shadow-sm font-bold' :
+                            'text-slate-500 hover:bg-slate-100 font-medium'"
+                        class="px-3 py-1.5 text-xs rounded-md transition-all duration-200">
+                        Semua
+                    </button>
+
+                </div>
+
+                <div class="relative">
+                    <input type="date" x-ref="dateInput"
+                        class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                        @change="dateFilter = 'custom'">
+
+                    <button
+                        :class="dateFilter === 'custom' ? 'border-emerald-500 text-emerald-700 bg-emerald-50' :
+                            'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'"
+                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium border rounded-lg shadow-sm transition active:scale-95">
+                        <i class="fas fa-calendar-alt"
+                            :class="dateFilter === 'custom' ? 'text-emerald-600' : 'text-slate-400'"></i>
+                        <span x-text="dateFilter === 'custom' ? 'Tanggal Dipilih' : 'Pilih Tanggal'"></span>
+                    </button>
+                </div>
+
+            </div>
+
+            <button onclick="exportData()"
+                class="flex items-center gap-1.5 px-4 py-1.5 text-xs sm:text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm w-full sm:w-auto justify-center transition active:scale-95">
+                <i class="fas fa-file-alt"></i> Export Semua
+            </button>
+        </div>
     </div>
 
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <?php
-            // Data Dummy Khusus LPS
-            $stats = [
-                'bank_peserta' => 1045,
-                'total_simpanan' => '5.840', // Dalam Triliun
-                'klaim_proses' => 12,
-                'pegawai_lps' => 742
-            ];
-
-            $cards = [
-                ['label' => 'Bank Peserta', 'value' => $stats['bank_peserta'], 'sub' => 'Bank Umum & BPR aktif', 'color' => 'border-orange-500', 'icon' => 'fa-building-columns'],
-                ['label' => 'Total Simpanan', 'value' => 'Rp' . $stats['total_simpanan'] . 'T', 'sub' => 'Estimasi dana dijamin', 'color' => 'border-orange-400', 'icon' => 'fa-vault'],
-                ['label' => 'Klaim Berjalan', 'value' => $stats['klaim_proses'], 'sub' => 'Proses rekonsiliasi/verifikasi', 'color' => 'border-green-500', 'icon' => 'fa-file-invoice-dollar'],
-                ['label' => 'Total Pegawai', 'value' => $stats['pegawai_lps'], 'sub' => 'Seluruh kantor wilayah', 'color' => 'border-blue-900', 'icon' => 'fa-users-gear']
-            ];
-        ?>
-
-        <?php $__currentLoopData = $cards; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 <?php echo e($item['color']); ?> flex justify-between items-start hover:shadow-md transition-shadow">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"><?php echo e($item['label']); ?></p>
-                    <h3 class="text-3xl font-bold text-slate-800 my-1"><?php echo e($item['value']); ?></h3>
-                    <p class="text-[10px] text-slate-400"><?php echo e($item['sub']); ?></p>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg text-orange-600">
-                    <i class="fas <?php echo e($item['icon']); ?> text-lg"></i>
-                </div>
-            </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </div>
 
     
-    <?php $laporanBelumVerifikasi = 3; ?>
-    <?php if($laporanBelumVerifikasi > 0): ?>
-        <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl flex items-center space-x-4 shadow-sm">
-            <div class="bg-orange-500 text-white w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
-                <i class="fas fa-shield-check text-xl"></i>
-            </div>
-            <div>
-                <p class="text-base font-bold text-orange-900 leading-tight">Notifikasi Penjaminan</p>
-                <p class="text-sm text-orange-700 mt-1">
-                    Terdapat <span class="font-extrabold underline"><?php echo e($laporanBelumVerifikasi); ?></span> laporan premi berkala bank peserta yang memerlukan verifikasi manual oleh <span class="font-semibold">Biro SDM & Administrasi</span>.
-                </p>
-            </div>
-        </div>
-    <?php endif; ?>
+    <?php echo $__env->make('partials.dashboard.stat-cards', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     
-    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h4 class="font-bold text-slate-800 mb-4 uppercase text-xs tracking-widest">Aktivitas Terkini Penugasan</h4>
-            <div class="space-y-4">
-                <?php $__currentLoopData = ['Audit Kepatuhan Bank - Wilayah I', 'Rekrutmen Tenaga Ahli Likuidasi', 'Pembaruan Sertifikat Penjaminan BPR']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-                        <span class="text-sm text-slate-700 font-medium"><?php echo e($task); ?></span>
-                    </div>
-                    <span class="text-[10px] bg-white px-2 py-1 rounded border text-slate-400">Baru saja</span>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-        </div>
+    <?php echo $__env->make('partials.dashboard.charts', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-        <div class="bg-orange-600 p-6 rounded-xl shadow-sm text-white flex flex-col justify-between">
-            <div>
-                <i class="fas fa-info-circle text-2xl mb-4"></i>
-                <h4 class="font-bold text-lg mb-2">Status Sistem LPS</h4>
-                <p class="text-xs text-orange-100 leading-relaxed">
-                    Seluruh modul pelaporan (SCV), sistem premi, dan pendaftaran penugasan pejabat dalam kondisi stabil.
-                </p>
-            </div>
-            <div class="mt-4 pt-4 border-t border-white/20">
-                <p class="text-[10px] uppercase tracking-tighter opacity-70">Terakhir diperbarui: <?php echo e(date('H:i')); ?> WIB</p>
-            </div>
-        </div>
-    </div>
+    
+    <?php echo $__env->make('partials.dashboard.tabs', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Dashboard Loaded. Inisialisasi Grafik...");
+
+            const fontFamily = 'Plus Jakarta Sans, sans-serif';
+
+            // --- CEK DATA DARI CONTROLLER ---
+            const dataTrend = <?php echo json_encode($chartTrend ?? ['labels' => [], 'data' => []], 512) ?>;
+            const dataGender = <?php echo json_encode($chartGender ?? ['labels' => [], 'data' => []], 512) ?>;
+            const dataActivity = <?php echo json_encode($chartActivity ?? ['labels' => [], 'data' => []], 512) ?>;
+
+            console.log("Data Trend:", dataTrend); // Cek di Console browser (F12)
+
+            // ── 1. CHART TREN ──
+            const trendOptions = {
+                series: [{
+                    name: 'Pengunjung',
+                    data: dataTrend.data
+                }],
+                chart: {
+                    type: 'area',
+                    height: 230, // Angka Fix
+                    toolbar: {
+                        show: false
+                    },
+                    fontFamily: fontFamily,
+                    parentHeightOffset: 0
+                },
+                colors: ['#10b981'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2.5
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.05,
+                        stops: [0, 100]
+                    }
+                },
+                xaxis: {
+                    categories: dataTrend.labels,
+                    labels: {
+                        style: {
+                            colors: '#94a3b8',
+                            fontSize: '10px'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    show: true,
+                    labels: {
+                        style: {
+                            colors: '#94a3b8',
+                            fontSize: '10px'
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: '#f1f5f9',
+                    strokeDashArray: 4,
+                    padding: {
+                        top: 0,
+                        bottom: 0,
+                        left: 10,
+                        right: 0
+                    }
+                },
+                tooltip: {
+                    theme: 'light'
+                }
+            };
+
+            if (document.querySelector("#chart-trend-desktop")) {
+                new ApexCharts(document.querySelector("#chart-trend-desktop"), trendOptions).render();
+            }
+
+            // Mobile Version
+            if (document.querySelector("#chart-trend-mobile")) {
+                const mobileOpts = JSON.parse(JSON.stringify(trendOptions));
+                mobileOpts.chart.height = 200;
+                mobileOpts.xaxis.labels.rotate = -30;
+                new ApexCharts(document.querySelector("#chart-trend-mobile"), mobileOpts).render();
+            }
+
+            // ── 2. CHART GENDER ──
+            const genderOptions = {
+                series: [{
+                    data: dataGender.data
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 160, // Angka Fix
+                    toolbar: {
+                        show: false
+                    },
+                    fontFamily: fontFamily,
+                    parentHeightOffset: 0
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 4,
+                        barHeight: '40%',
+                        distributed: true
+                    }
+                },
+                colors: ['#3b82f6', '#ec4899'],
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: dataGender.labels,
+                    labels: {
+                        show: true,
+                        style: {
+                            colors: '#64748b',
+                            fontSize: '10px'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: '#64748b',
+                            fontSize: '11px',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                grid: {
+                    show: false,
+                    padding: {
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: {
+                    theme: 'light'
+                }
+            };
+            if (document.querySelector("#chart-gender")) {
+                new ApexCharts(document.querySelector("#chart-gender"), genderOptions).render();
+            }
+
+            // ── 3. CHART AKTIVITAS ──
+            const activityOptions = {
+                series: [{
+                    name: 'Total',
+                    data: dataActivity.data
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 180, // Angka Fix
+                    toolbar: {
+                        show: false
+                    },
+                    fontFamily: fontFamily,
+                    parentHeightOffset: 0
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        columnWidth: '50%',
+                        distributed: true
+                    }
+                },
+                colors: ['#14b8a6', '#f59e0b', '#f97316', '#3b82f6'],
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: dataActivity.labels,
+                    labels: {
+                        style: {
+                            colors: '#64748b',
+                            fontSize: '10px'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    show: true,
+                    labels: {
+                        style: {
+                            colors: '#94a3b8',
+                            fontSize: '10px'
+                        }
+                    }
+                },
+                grid: {
+                    show: false,
+                    padding: {
+                        top: 0,
+                        bottom: 0
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: {
+                    theme: 'light'
+                }
+            };
+            if (document.querySelector("#chart-activity")) {
+                new ApexCharts(document.querySelector("#chart-activity"), activityOptions).render();
+            }
+        });
+    </script>
+<?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /var/www/html/resources/views/admin/dashboard.blade.php ENDPATH**/ ?>

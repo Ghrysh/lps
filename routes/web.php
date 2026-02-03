@@ -7,7 +7,6 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\PointController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
-use App\Http\Controllers\AnalyticsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,7 +15,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    // Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
 
     // Gallery
     Route::get('/gallery', [ToolController::class, 'gallery'])->name('gallery.index');

@@ -3,89 +3,138 @@
 @section('title', 'Dashboard LPS')
 
 @section('content')
-    {{-- Header --}}
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Monitoring</h2>
-        <p class="text-sm text-slate-500">Ringkasan data operasional Lembaga Penjamin Simpanan (LPS)</p>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        .card-amber {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+        }
+
+        .card-teal {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .card-rose {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        .tab-active {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        ::-webkit-scrollbar {
+            height: 4px;
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+        /* ── Mobile card rows (tables → cards < md) ── */
+        .card-row {
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-row:first-child {
+            border-top: none;
+        }
+
+        /* hide table, show cards on mobile; reverse on md+ */
+        .tbl-desktop {
+            display: none;
+        }
+
+        .tbl-mobile {
+            display: block;
+        }
+
+        @media (min-width: 768px) {
+            .tbl-desktop {
+                display: block;
+            }
+
+            .tbl-mobile {
+                display: none;
+            }
+        }
+    </style>
+    <!-- ── HEADER ── -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 sm:mb-6 gap-3 sm:gap-4">
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">
+                Dashboard Analitik LPS
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm">
+                Monitoring aktivitas & interaksi pengunjung secara real-time
+            </p>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
+            <div class="flex gap-2 items-center flex-wrap">
+                <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+                    <button class="px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 rounded-md">
+                        Hari Ini
+                    </button>
+                    <button class="px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 rounded-md">
+                        7 Hari
+                    </button>
+                    <button class="px-3 py-1.5 text-xs font-bold bg-emerald-600 text-white rounded-md">
+                        Semua
+                    </button>
+                </div>
+
+                <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">
+                    <i class="fas fa-calendar-alt"></i> Pilih Tanggal
+                </button>
+            </div>
+
+            <button
+                class="flex items-center gap-1.5 px-4 py-1.5 text-xs sm:text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm w-full sm:w-auto justify-center">
+                <i class="fas fa-file-alt"></i> Export Semua
+            </button>
+        </div>
     </div>
 
-    {{-- Stats Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        @php
-            // Data Dummy Khusus LPS
-            $stats = [
-                'bank_peserta' => 1045,
-                'total_simpanan' => '5.840', // Dalam Triliun
-                'klaim_proses' => 12,
-                'pegawai_lps' => 742
-            ];
+    {{-- ================= STAT CARDS ================= --}}
+    {{-- PAKAI PERSIS YANG ATAS --}}
+    @include('partials.dashboard.stat-cards')
 
-            $cards = [
-                ['label' => 'Bank Peserta', 'value' => $stats['bank_peserta'], 'sub' => 'Bank Umum & BPR aktif', 'color' => 'border-orange-500', 'icon' => 'fa-building-columns'],
-                ['label' => 'Total Simpanan', 'value' => 'Rp' . $stats['total_simpanan'] . 'T', 'sub' => 'Estimasi dana dijamin', 'color' => 'border-orange-400', 'icon' => 'fa-vault'],
-                ['label' => 'Klaim Berjalan', 'value' => $stats['klaim_proses'], 'sub' => 'Proses rekonsiliasi/verifikasi', 'color' => 'border-green-500', 'icon' => 'fa-file-invoice-dollar'],
-                ['label' => 'Total Pegawai', 'value' => $stats['pegawai_lps'], 'sub' => 'Seluruh kantor wilayah', 'color' => 'border-blue-900', 'icon' => 'fa-users-gear']
-            ];
-        @endphp
+    {{-- ================= CHARTS ================= --}}
+    @include('partials.dashboard.charts')
 
-        @foreach ($cards as $item)
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 {{ $item['color'] }} flex justify-between items-start hover:shadow-md transition-shadow">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{{ $item['label'] }}</p>
-                    <h3 class="text-3xl font-bold text-slate-800 my-1">{{ $item['value'] }}</h3>
-                    <p class="text-[10px] text-slate-400">{{ $item['sub'] }}</p>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg text-orange-600">
-                    <i class="fas {{ $item['icon'] }} text-lg"></i>
-                </div>
-            </div>
-        @endforeach
-    </div>
-
-    {{-- Alert Khusus LPS --}}
-    @php $laporanBelumVerifikasi = 3; @endphp
-    @if ($laporanBelumVerifikasi > 0)
-        <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl flex items-center space-x-4 shadow-sm">
-            <div class="bg-orange-500 text-white w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
-                <i class="fas fa-shield-check text-xl"></i>
-            </div>
-            <div>
-                <p class="text-base font-bold text-orange-900 leading-tight">Notifikasi Penjaminan</p>
-                <p class="text-sm text-orange-700 mt-1">
-                    Terdapat <span class="font-extrabold underline">{{ $laporanBelumVerifikasi }}</span> laporan premi berkala bank peserta yang memerlukan verifikasi manual oleh <span class="font-semibold">Biro SDM & Administrasi</span>.
-                </p>
-            </div>
-        </div>
-    @endif
-
-    {{-- Info Panel LPS --}}
-    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h4 class="font-bold text-slate-800 mb-4 uppercase text-xs tracking-widest">Aktivitas Terkini Penugasan</h4>
-            <div class="space-y-4">
-                @foreach(['Audit Kepatuhan Bank - Wilayah I', 'Rekrutmen Tenaga Ahli Likuidasi', 'Pembaruan Sertifikat Penjaminan BPR'] as $task)
-                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-                        <span class="text-sm text-slate-700 font-medium">{{ $task }}</span>
-                    </div>
-                    <span class="text-[10px] bg-white px-2 py-1 rounded border text-slate-400">Baru saja</span>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="bg-orange-600 p-6 rounded-xl shadow-sm text-white flex flex-col justify-between">
-            <div>
-                <i class="fas fa-info-circle text-2xl mb-4"></i>
-                <h4 class="font-bold text-lg mb-2">Status Sistem LPS</h4>
-                <p class="text-xs text-orange-100 leading-relaxed">
-                    Seluruh modul pelaporan (SCV), sistem premi, dan pendaftaran penugasan pejabat dalam kondisi stabil.
-                </p>
-            </div>
-            <div class="mt-4 pt-4 border-t border-white/20">
-                <p class="text-[10px] uppercase tracking-tighter opacity-70">Terakhir diperbarui: {{ date('H:i') }} WIB</p>
-            </div>
-        </div>
-    </div>
+    {{-- ================= LAPORAN DETAIL + TAB ================= --}}
+    @include('partials.dashboard.tabs')
 @endsection

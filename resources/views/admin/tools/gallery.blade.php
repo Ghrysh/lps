@@ -5,7 +5,7 @@
     <div class="mb-8 flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Image Gallery</h2>
-            <p class="text-sm text-slate-500">Dokumentasi aset dan kegiatan LPS</p>
+            <p class="text-sm text-slate-500">Dataset Scan AR</p>
         </div>
         <button onclick="document.getElementById('modalUpload').classList.remove('hidden')"
             class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition">

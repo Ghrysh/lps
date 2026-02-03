@@ -43,7 +43,7 @@
 
         .dropdown-container.open {
             /* Perbesar max-height karena menu bertambah */
-            max-height: 500px; 
+            max-height: 500px;
         }
     </style>
     @stack('styles')
@@ -99,7 +99,13 @@
                     {{-- Menu Scanner --}}
                     <a href="{{ route('admin.scanner') }}"
                         class="{{ request()->routeIs('admin.scanner') ? 'sidebar-active text-white' : 'text-orange-100' }} flex items-center pl-14 pr-6 py-2 text-sm hover:bg-white/10 transition">
-                        <i class="fas fa-qrcode w-5 text-xs"></i> <span>Scan QR Code</span>
+                        <i class="fas fa-camera w-5 text-xs"></i> <span>Scan Object AR</span>
+                    </a>
+
+                    <a href="{{ route('admin.points.scan') }}"
+                        class="{{ request()->routeIs('admin.points.scan') ? 'sidebar-active text-white' : 'text-orange-100' }} flex items-center pl-14 pr-6 py-2 text-sm hover:bg-white/10 transition">
+                        <i class="fas fa-qrcode w-5 text-xs"></i>
+                        <span>Scan QR Code</span>
                     </a>
 
                     {{-- Menu Photobooth --}}
@@ -147,21 +153,64 @@
 
     <div id="mainContent" class="sidebar-transition flex-grow flex flex-col min-h-screen lg:ml-64">
 
-        <header id="mobileHeader" class="bg-white shadow-sm border-b p-4 flex items-center lg:hidden shrink-0">
-            <button onclick="toggleSidebar()" class="text-orange-600 p-2 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-            <h2 class="ml-4 font-bold text-gray-800">LPS</h2>
+        <header id="mobileHeader"
+            class="bg-white shadow-sm border-b p-4 flex items-center justify-between lg:hidden shrink-0">
+            <div class="flex items-center">
+                <button onclick="toggleSidebar()" class="text-orange-600 p-2 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="ml-3 font-bold text-gray-800">LPS</h2>
+            </div>
+
+            <div class="flex items-center gap-2 text-orange-600 font-semibold text-sm">
+                <i class="fas fa-coins"></i>
+                {{ number_format($totalPoints ?? 0) }}
+            </div>
         </header>
 
+
         <header id="desktopHeader"
-            class="bg-white shadow-sm border-b px-8 py-4 hidden lg:flex items-center sticky top-0 z-30 sidebar-transition shrink-0">
-            <button id="desktopHamburger" onclick="toggleSidebar()"
-                class="text-orange-600 p-2 focus:outline-none mr-4 hidden">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-            <h2 class="font-bold text-[#112D4E]">Lembaga Penjamin Simpanan</h2>
+            class="bg-white shadow-sm border-b px-8 py-4 hidden lg:flex items-center justify-between sticky top-0 z-30 sidebar-transition shrink-0">
+
+            {{-- KIRI --}}
+            <div class="flex items-center">
+                <button id="desktopHamburger" onclick="toggleSidebar()"
+                    class="text-orange-600 p-2 focus:outline-none mr-4 hidden">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="font-bold text-[#112D4E]">Lembaga Penjamin Simpanan</h2>
+            </div>
+
+            {{-- KANAN : USER & POINT --}}
+            <div class="flex items-center gap-4">
+
+                {{-- POINT BADGE --}}
+                <div
+                    class="flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
+                    <i class="fas fa-coins"></i>
+                    {{ number_format($totalPoints ?? 0) }} Poin
+                </div>
+
+                {{-- USER --}}
+                <div class="flex items-center gap-3">
+                    <div class="text-right leading-tight">
+                        <p class="text-sm font-semibold text-gray-800">
+                            {{ auth()->user()->name }}
+                        </p>
+                        <p class="text-[11px] text-gray-400">
+                            {{ auth()->user()->email }}
+                        </p>
+                    </div>
+
+                    {{-- AVATAR --}}
+                    <div
+                        class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold uppercase">
+                        {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                    </div>
+                </div>
+            </div>
         </header>
+
 
         <main class="p-4 md:p-6 lg:p-8 flex-grow">
             @yield('content')

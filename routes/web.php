@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ToolController;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\PointController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 
@@ -21,10 +23,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/scanner', [ToolController::class, 'scanner'])->name('scanner');
     Route::post('/asset-detail', [ToolController::class, 'getAssetDetail'])->name('asset.detail');
 
-    Route::get('/photobooth', [ToolController::class, 'photobooth'])->name('photobooth');
+    Route::get('/photobooth', [PhotoController::class, 'photobooth'])->name('photobooth');
 
-    // Rute master data lainnya...
+    // POINT
+    Route::get('/scan-points', [PointController::class, 'index'])->name('points.scan');
+    // Route untuk memproses point dari QR
+    Route::post('/process-points', [PointController::class, 'process'])->name('points.process');
+    
+
 });
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

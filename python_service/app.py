@@ -10,7 +10,7 @@ import math
 app = Flask(__name__)
 CORS(app)
 
-ASSETS_PATH = "/var/www/html/public/assets/baju"
+ASSETS_PATH = "/shared/assets/baju"
 mp_pose = mp.solutions.pose
 
 def rotate_image(image, angle):

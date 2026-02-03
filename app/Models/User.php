@@ -16,4 +16,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
+
+    public function points()
+    {
+        return $this->hasMany(Point::class);
+    }
 }

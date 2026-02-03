@@ -47,10 +47,24 @@ services:
         ports:
             - "5000:5000"
         volumes:
-            - ./:/var/www/html # Mount seluruh root project
+            - ./public/assets/baju:/shared/assets/baju
         networks:
             - lps_net
         restart: unless-stopped
+
+    ar_service:
+        build:
+            context: ./python_service_ar
+            dockerfile: Dockerfile
+        container_name: lps_ar
+        ports:
+            - "5001:5000"
+        volumes:
+            - ./public/assets/gallery:/shared/assets/gallery
+        networks:
+            - lps_net
+        restart: unless-stopped
+
 
 networks:
     lps_net:

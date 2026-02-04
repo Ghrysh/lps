@@ -25,8 +25,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/scanner', [ToolController::class, 'scanner'])->name('scanner');
     Route::post('/asset-detail', [ToolController::class, 'getAssetDetail'])->name('asset.detail');
 
-    Route::get('/photobooth', [PhotoController::class, 'photobooth'])->name('photobooth');
-
     // POINT
     Route::get('/scan-points', [PointController::class, 'index'])->name('points.scan');
     // Route untuk memproses point dari QR
@@ -36,14 +34,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::middleware('auth')->group(function () {
+    
+    // 1. Minigame Standalone
+    Route::get('/minigame', [QuizController::class, 'index'])->name('minigame');
+
+    Route::post('/minigame/save', [QuizController::class, 'saveScore'])->name('minigame.save');
+
+    // 2. Photobooth Standalone
+    Route::get('/fotobooth', [PhotoController::class, 'photobooth'])->name('photobooth');
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Halaman Game
-    Route::get('/tools/minigame', [QuizController::class, 'index'])->name('tools.minigame');
-
-    // Halaman Admin Master Data Soal
+    // Quiz Manager (Tetap Admin Tool tapi di group auth biasa sesuai request sebelumnya)
     Route::get('/tools/quiz-manager', [QuizController::class, 'manage'])->name('tools.quiz_manager');
     Route::post('/tools/quiz-manager', [QuizController::class, 'store'])->name('tools.quiz_store');
     Route::delete('/tools/quiz-manager/{id}', [QuizController::class, 'destroy'])->name('tools.quiz_delete');

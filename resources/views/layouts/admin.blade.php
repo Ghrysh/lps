@@ -132,22 +132,12 @@
                         <span>Scan QR Code</span>
                     </a>
 
-                    <a href="{{ route('admin.photobooth') }}"
-                        class="{{ request()->routeIs('admin.photobooth') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('admin.photobooth') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
-                        <span>Photobooth AI</span>
-                    </a>
-
                     {{-- Divider Kecil --}}
                     <div class="border-t border-slate-100 my-2 mx-4"></div>
 
                     <a href="{{ route('tools.quiz_manager') }}"
                         class="{{ request()->routeIs('tools.quiz_manager') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('tools.quiz_manager') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
                         <span>Quiz Manager</span>
-                    </a>
-
-                    <a href="{{ route('tools.minigame') }}"
-                        class="{{ request()->routeIs('tools.minigame') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('tools.minigame') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
-                        <span>LPS Smart Quiz</span>
                     </a>
                 </div>
             </div>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\Point;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
@@ -59,6 +61,21 @@ class QuizController extends Controller
         }
 
         return back()->with('success', 'Soal berhasil ditambahkan!');
+    }
+
+    public function saveScore(Request $request)
+    {
+        $request->validate([
+            'nilai' => 'required|integer',
+        ]);
+
+        // Simpan ke database
+        Point::create([
+            'user_id' => Auth::id(),
+            'nilai'   => $request->nilai
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function destroy($id)

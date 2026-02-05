@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ToolController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\PointController;
+use App\Http\Controllers\PhotoboothDatasetController;
+use App\Http\Controllers\PhotoboothBajuClickController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 
@@ -20,6 +22,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Gallery
     Route::get('/gallery', [ToolController::class, 'gallery'])->name('gallery.index');
     Route::post('/gallery', [ToolController::class, 'storeGallery'])->name('gallery.store');
+
+    Route::get('/photobooth-dataset', [PhotoboothDatasetController::class, 'index'])
+        ->name('photobooth.index');
+
+    Route::post('/photobooth-dataset', [PhotoboothDatasetController::class, 'store'])
+        ->name('photobooth.store');
 
     // Scanner
     Route::get('/scanner', [ToolController::class, 'scanner'])->name('scanner');
@@ -42,6 +50,8 @@ Route::middleware('auth')->group(function () {
 
     // 2. Photobooth Standalone
     Route::get('/fotobooth', [PhotoController::class, 'photobooth'])->name('photobooth');
+    Route::post('/photobooth/baju-click', [PhotoboothBajuClickController::class, 'store'])
+    ->name('photobooth.baju.click');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

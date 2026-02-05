@@ -99,7 +99,6 @@
         </div>
 
         <div x-show="activeTab === 'foto'" x-cloak>
-
             <div class="flex justify-end mb-6">
                 <button
                     class="flex items-center gap-2 text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded-lg text-xs font-bold transition shadow-sm">
@@ -107,8 +106,9 @@
                 </button>
             </div>
 
-            <div class="bg-white rounded-xl border border-slate-100 p-6 mb-6">
-                <h4 class="font-bold text-slate-800 text-sm mb-6 font-serif">Distribusi Kostum Daerah</h4>
+            <div class="bg-white rounded-xl border border-slate-100 p-6 mb-6 shadow-sm">
+                <h4 class="font-bold text-slate-800 text-sm mb-6 font-serif">Distribusi Kostum Daerah (Berdasarkan Klik)
+                </h4>
                 <div class="space-y-5">
                     @foreach ($kostum as $k)
                         <div>
@@ -117,11 +117,12 @@
                                     <span class="w-2.5 h-2.5 rounded-full {{ $k['color'] }}"></span>
                                     {{ $k['nama'] }}
                                 </span>
-                                <span class="text-slate-400 font-medium">{{ $k['count'] }}
-                                    ({{ number_format($k['persen'], 1) }}%)</span>
+                                <span class="text-slate-400 font-medium">{{ $k['count'] }} Klik
+                                    ({{ number_format($k['persen'], 1) }}%)
+                                </span>
                             </div>
-                            <div class="w-full bg-[#f1f5f9] rounded-full h-2.5">
-                                <div class="h-2.5 rounded-full {{ $k['color'] }}"
+                            <div class="w-full bg-slate-100 rounded-full h-2.5">
+                                <div class="h-2.5 rounded-full {{ $k['color'] }} transition-all duration-500"
                                     style="width: {{ $k['persen'] }}%"></div>
                             </div>
                         </div>
@@ -129,42 +130,56 @@
                 </div>
             </div>
 
-            <div class="rounded-lg border border-slate-100 overflow-hidden">
-                <div class="px-6 py-4 bg-white border-b border-slate-100">
-                    <h4 class="font-bold text-slate-800 text-sm font-serif">Riwayat Foto Booth Terbaru</h4>
+            <div class="rounded-xl border border-slate-100 overflow-hidden shadow-sm bg-white">
+                <div class="px-6 py-4 border-b border-slate-100 bg-white">
+                    <h4 class="font-bold text-slate-800 text-sm font-serif">Log Aktivitas Photobooth Terbaru</h4>
                 </div>
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                        <tr>
-                            <th class="px-6 py-3">#</th>
-                            <th class="px-6 py-3">Kostum Daerah</th>
-                            <th class="px-6 py-3 text-center">Poin Digunakan</th>
-                            <th class="px-6 py-3 text-right">Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 text-sm bg-white">
-                        @if (isset($riwayatFoto) && count($riwayatFoto) > 0)
-                            @foreach ($riwayatFoto as $idx => $rf)
-                                <tr>
-                                    <td class="px-6 py-4 text-slate-600">{{ $idx + 1 }}</td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md {{ $rf['bg_color'] }} border {{ $rf['border_color'] }} text-xs font-bold {{ $rf['text_color'] }}">
-                                            <span class="w-1.5 h-1.5 rounded-full {{ $rf['dot_color'] }}"></span>
-                                            {{ $rf['kostum'] }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-bold text-slate-700">{{ $rf['poin'] }}</td>
-                                    <td class="px-6 py-4 text-right text-slate-500">{{ $rf['waktu'] }}</td>
-                                </tr>
-                            @endforeach
-                        @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead
+                            class="bg-slate-50/50 text-slate-500 text-[10px] uppercase font-bold tracking-widest border-b border-slate-100">
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-slate-400">Belum ada data.</td>
+                                <th class="px-6 py-4">#</th>
+                                <th class="px-6 py-4">Kostum Daerah</th>
+                                <th class="px-6 py-4 text-center">Gender Mode</th>
+                                <th class="px-6 py-4 text-right">Waktu Aktivitas</th>
                             </tr>
-                        @endif
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-sm">
+                            @if (isset($riwayatFoto) && count($riwayatFoto) > 0)
+                                @foreach ($riwayatFoto as $idx => $rf)
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <td class="px-6 py-4 text-slate-400 font-medium">{{ $idx + 1 }}</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-3 h-3 rounded-full {{ $rf['dot_color'] }}"></div>
+                                                <span class="font-semibold text-slate-700">{{ $rf['kostum'] }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold border {{ $rf['bg_color'] }} {{ $rf['border_color'] }} {{ $rf['text_color'] }}">
+                                                {{ strtoupper($rf['gender_mode']) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right text-slate-500 text-xs font-medium">
+                                            {{ $rf['waktu'] }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="4" class="text-center py-10">
+                                        <div class="flex flex-col items-center justify-center text-slate-400">
+                                            <i class="fas fa-folder-open text-2xl mb-2"></i>
+                                            <p class="text-xs uppercase tracking-wider">Belum ada aktivitas tercatat</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

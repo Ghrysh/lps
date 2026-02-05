@@ -102,6 +102,32 @@
             {{-- Label --}}
             <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Aplikasi</div>
 
+            <div>
+                <button onclick="toggleDropdown('masterDropdownDataset')" id="btn-masterDropdownDataset"
+                    class="{{ request()->is('admin/gallery*') || request()->is('admin/photobooth-dataset') ? 'text-slate-800 font-medium bg-slate-50' : 'text-slate-500' }} w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-50 rounded-lg transition group">
+                    <div class="flex items-center">
+                        <i class="fas fa-layer-group w-5 mr-3 text-slate-400 group-hover:text-slate-600"></i>
+                        <span>Dataset</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-[10px] text-slate-300 transition-transform duration-200"></i>
+                </button>
+
+                {{-- Sub Menu Container --}}
+                <div id="masterDropdownDataset"
+                    class="dropdown-container pl-4 space-y-1 mt-1 {{ request()->routeIs('admin.gallery.*') || request()->routeIs('admin.photobooth') ? 'open' : '' }}">
+
+                    <a href="{{ route('admin.gallery.index') }}"
+                        class="{{ request()->routeIs('admin.gallery.*') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('admin.gallery.*') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
+                        <span>Dataset AR</span>
+                    </a>
+
+                    <a href="{{ route('admin.photobooth.index') }}"
+                        class="{{ request()->routeIs('admin.photobooth.index') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('admin.photobooth.index*') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
+                        <span>Dataset Photobooth</span>
+                    </a>
+
+                </div>
+            </div>
             {{-- Dropdown Apps --}}
             <div>
                 <button onclick="toggleDropdown('masterDropdown')" id="btn-masterDropdown"
@@ -115,12 +141,7 @@
 
                 {{-- Sub Menu Container --}}
                 <div id="masterDropdown"
-                    class="dropdown-container pl-4 space-y-1 mt-1 {{ request()->routeIs('admin.gallery.*') || request()->routeIs('admin.scanner') || request()->routeIs('admin.photobooth') || request()->routeIs('tools.*') ? 'open' : '' }}">
-
-                    <a href="{{ route('admin.gallery.index') }}"
-                        class="{{ request()->routeIs('admin.gallery.*') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('admin.gallery.*') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">
-                        <span>Gallery Image</span>
-                    </a>
+                    class="dropdown-container pl-4 space-y-1 mt-1 {{ request()->routeIs('admin.scanner') || request()->routeIs('admin.photobooth') || request()->routeIs('tools.*') ? 'open' : '' }}">
 
                     <a href="{{ route('admin.scanner') }}"
                         class="{{ request()->routeIs('admin.scanner') ? 'text-emerald-600 font-medium bg-emerald-50' : 'text-slate-500 hover:text-slate-800' }} block px-4 py-2 text-sm rounded-lg transition border-l-2 {{ request()->routeIs('admin.scanner') ? 'border-emerald-500' : 'border-transparent hover:border-slate-300' }}">

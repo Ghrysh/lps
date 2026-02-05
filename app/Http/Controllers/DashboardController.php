@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use App\Models\PhotoboothDataset;
+use App\Models\PhotoboothBajuClick;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -56,21 +59,70 @@ class DashboardController extends Controller
             ['id' => 'visitor_005', 'gender' => 'L', 'poin' => 0,  'daftar' => '29 Jan, 23:19', 'aktif' => '29 Jan, 23:19'],
         ];
 
-        // FIX: Nama variabel disamakan jadi $kostum (bukan $kostumDistribusi)
-        $kostum = [
-            ['nama' => 'Sulawesi', 'count' => 12, 'persen' => 20.0, 'color' => 'bg-purple-500'],
-            ['nama' => 'Sumatera', 'count' => 10, 'persen' => 16.7, 'color' => 'bg-blue-500'],
-            ['nama' => 'Kalimantan', 'count' => 10, 'persen' => 16.7, 'color' => 'bg-orange-500'],
-            ['nama' => 'Bali', 'count' => 10, 'persen' => 16.7, 'color' => 'bg-emerald-500'],
-            ['nama' => 'Papua', 'count' => 9, 'persen' => 15.0, 'color' => 'bg-red-500'],
-            ['nama' => 'Jawa', 'count' => 9, 'persen' => 15.0, 'color' => 'bg-amber-500'],
-        ];
+        $clicks = PhotoboothBajuClick::with('dataset')->get();
 
-        $riwayatFoto = [
-            ['kostum' => 'Papua', 'poin' => 5, 'waktu' => '29 Jan 2026, 00:21', 'bg_color' => 'bg-red-50', 'border_color' => 'border-red-100', 'text_color' => 'text-red-600', 'dot_color' => 'bg-red-500'],
-            ['kostum' => 'Bali', 'poin' => 5, 'waktu' => '28 Jan 2026, 14:15', 'bg_color' => 'bg-emerald-50', 'border_color' => 'border-emerald-100', 'text_color' => 'text-emerald-600', 'dot_color' => 'bg-emerald-500'],
-            ['kostum' => 'Jawa', 'poin' => 5, 'waktu' => '28 Jan 2026, 10:00', 'bg_color' => 'bg-amber-50', 'border_color' => 'border-amber-100', 'text_color' => 'text-amber-600', 'dot_color' => 'bg-amber-500'],
-        ];
+        // 2. Grouping berdasarkan kata pertama (e.g., "Aceh")
+        $grouped = $clicks->groupBy(function ($click) {
+            return explode(' ', trim(optional($click->dataset)->title ?? 'Unknown'))[0];
+        });
+
+        $totalAllClicks = $clicks->count();
+        $colors = ['bg-purple-500', 'bg-blue-500', 'bg-orange-500', 'bg-emerald-500', 'bg-red-500', 'bg-amber-500', 'bg-slate-500'];
+
+        // --- BAGIAN KOSTUM ---
+        // Kita simpan referensi warna ke dalam array agar bisa dipanggil nanti
+        $regionColorMap = []; 
+
+        $kostum = $grouped->map(function ($items, $nama) use ($totalAllClicks, &$colors, &$regionColorMap) {
+            $count = $items->count();
+            $currentColor = array_shift($colors) ?? 'bg-slate-500'; 
+            $colors[] = $currentColor;
+
+            // Simpan warna untuk wilayah ini
+            $regionColorMap[$nama] = $currentColor;
+
+            return [
+                'nama'   => $nama,
+                'count'  => $count,
+                'persen' => $totalAllClicks > 0 ? round(($count / $totalAllClicks) * 100, 1) : 0,
+                'color'  => $currentColor,
+            ];
+        })->values()->sortByDesc('count')->toArray();
+
+        // --- BAGIAN RIWAYAT FOTO ---
+        $latestClicks = PhotoboothBajuClick::with('dataset')
+            ->orderBy('clicked_at', 'desc')
+            ->take(10)
+            ->get();
+
+        $riwayatFoto = $latestClicks->map(function ($click) use ($regionColorMap) {
+            // Ambil wilayah (kata pertama) untuk mencocokkan warna
+            $fullTitle = optional($click->dataset)->title ?? 'Unknown';
+            $regionName = explode(' ', trim($fullTitle))[0];
+            
+            // Ambil warna dari map yang sudah dibuat di atas, default ke slate jika tidak ada
+            $assignedColor = $regionColorMap[$regionName] ?? 'bg-slate-500';
+
+            // Logika warna badge berdasarkan gender_mode (tetap dipertahankan untuk badge)
+            $style = [
+                'Pria'   => ['bg' => 'bg-blue-50', 'border' => 'border-blue-100', 'text' => 'text-blue-600'],
+                'Wanita' => ['bg' => 'bg-pink-50', 'border' => 'border-pink-100', 'text' => 'text-pink-600'],
+                'Group'  => ['bg' => 'bg-purple-50', 'border' => 'border-purple-100', 'text' => 'text-purple-600'],
+            ];
+
+            $mode = $click->gender_mode ?? 'Group';
+            $currentStyle = $style[$mode] ?? $style['Group'];
+
+            return [
+                'kostum'       => $fullTitle,
+                'gender_mode'  => $mode,
+                'waktu'        => $click->clicked_at->format('d M Y, H:i'),
+                'bg_color'     => $currentStyle['bg'],
+                'border_color' => $currentStyle['border'],
+                'text_color'   => $currentStyle['text'],
+                'dot_color'    => $assignedColor, // SEKARANG SAMA DENGAN WARNA DI DATA KOSTUM
+            ];
+        })->toArray();
 
         $games = [
             ['rank' => 1, 'visitor' => '2e75f116...', 'skor' => 549, 'poin' => 18, 'waktu' => '24 Jan, 04:51'],

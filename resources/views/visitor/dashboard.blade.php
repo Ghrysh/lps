@@ -12,7 +12,7 @@
         </div>
         <div>
             <h2 class="text-xl font-bold text-slate-800">{{ $visitor->name ?? 'Pengunjung' }}</h2>
-            <p class="text-slate-400 text-sm">Selamat Datang</p>
+            <p class="text-slate-400 text-sm">Visitor</p>
         </div>
     </div>
 
@@ -50,8 +50,8 @@
             </a>
 
             {{-- Tombol Map (Shortcut) --}}
-            <button onclick="Swal.fire('Fitur Segera Hadir', 'Peta interaktif sedang dalam pengembangan.', 'info')"
-                class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 active:scale-95 transition hover:border-emerald-300 group w-full text-left">
+            <a href="{{ route('visitor.map') }}"
+                class="block bg-white p-5 rounded-3xl shadow-sm border border-slate-100 active:scale-95 transition hover:border-emerald-300 group w-full text-left">
 
                 <div
                     class="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-3 group-hover:bg-emerald-500 group-hover:text-white transition">
@@ -59,8 +59,8 @@
                 </div>
 
                 <h3 class="font-bold text-slate-800 text-sm">Peta Lokasi</h3>
-                <p class="text-slate-400 text-[10px] mt-1">Lihat Denah panel</p>
-            </button>
+                <p class="text-slate-400 text-[10px] mt-1">Lihat Denah Panel</p>
+            </a>
 
         </div>
 

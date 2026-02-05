@@ -80,6 +80,10 @@ Route::prefix('visitor')->name('visitor.')->group(function () {
     // Ini agar Visitor bisa scan tanpa harus login sebagai Admin
     Route::post('/api/add-point', [VisitorController::class, 'apiAddPoint'])->name('api.point');
     Route::post('/api/asset-detail', [VisitorController::class, 'apiAssetDetail'])->name('api.asset');
+
+    Route::get('/map', [VisitorController::class, 'map'])->name('map');
+
+    Route::post('/logout', [VisitorController::class, 'logout'])->name('logout');
 });
 
 require __DIR__ . '/auth.php';

@@ -11,13 +11,13 @@ return new class extends Migration
         Schema::create('points', function (Blueprint $blueprint) {
             $blueprint->id();
             // Menggunakan foreignUuid karena relasinya berasal dari UUID
-            $blueprint->foreignUuid('user_id')
-                      ->constrained('users')
-                      ->onDelete('cascade'); 
-            
+            $blueprint->foreignUuid('visitor_id')
+                ->constrained('visitors')
+                ->onDelete('cascade');
+
             // Kolom nilai (bisa integer atau decimal tergantung kebutuhan)
             $blueprint->integer('nilai')->default(0);
-            
+
             $blueprint->timestamps();
         });
     }

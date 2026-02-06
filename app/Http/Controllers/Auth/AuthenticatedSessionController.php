@@ -48,7 +48,7 @@ class AuthenticatedSessionController extends Controller
         } 
         
         if ($user->roles()->where('slug', 'user')->exists()) {
-            return redirect()->intended(route('dashboard')); 
+            return redirect()->intended(route('visitor.index')); 
         }
 
         return redirect()->intended(route('dashboard'));

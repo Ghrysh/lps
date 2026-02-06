@@ -61,7 +61,7 @@
         const canvas = document.getElementById('canvas');
         const arImage = document.getElementById('ar-image');
 
-        // Pastikan CSRF Token diambil dengan benar
+        // CSRF Token
         const csrfToken = "{{ csrf_token() }}";
 
         let isScanning = false;
@@ -76,11 +76,13 @@
                 }
             }).then(stream => {
                 video.srcObject = stream;
-                // Mulai loop scan yang aman (Recursive)
                 requestAnimationFrame(scanLoop);
             }).catch(err => {
-                Swal.fire('Izin Kamera Ditolak', 'Mohon aktifkan izin kamera untuk menggunakan fitur ini.',
-                'error');
+                Swal.fire(
+                    'Izin Kamera Ditolak',
+                    'Mohon aktifkan izin kamera untuk menggunakan fitur ini.',
+                    'error'
+                );
             });
         }
 
@@ -107,7 +109,6 @@
                 const formData = new FormData();
                 formData.append('image', blob);
 
-                // Kirim ke Flask (Pastikan Service Python berjalan di Port 5001)
                 fetch('http://localhost:5001/recognize', {
                         method: 'POST',
                         body: formData
@@ -118,7 +119,6 @@
                             // Jika objek dikenali oleh Flask, minta detail ke Laravel
                             fetchAssetDetail(data.filename, data.points);
                         } else {
-                            // Jika tidak dikenali, sembunyikan overlay
                             arImage.classList.add('hidden');
                         }
                     })
@@ -128,7 +128,7 @@
                     .finally(() => {
                         isScanning = false; // Buka kunci scanning
                     });
-            }, 'image/jpeg', 0.6); // Kompresi JPEG 0.6
+            }, 'image/jpeg', 0.6);
         }
 
         // 4. Get Detail from Laravel
@@ -155,12 +155,10 @@
             arImage.src = url;
             arImage.classList.remove('hidden');
 
-            // Hitung tengah bounding box dari Flask
-            // points = [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
             const cx = (points[0][0] + points[2][0]) / 2;
             const cy = (points[0][1] + points[2][1]) / 2;
 
-            // Scaling koordinat (karena kita resize canvas ke 400px)
+            // Scaling koordinat (karena canvas resize ke 400px)
             const scaleX = video.clientWidth / 400;
 
             arImage.style.left = (cx * scaleX) + 'px';
@@ -170,14 +168,12 @@
 
         // 6. Text to Speech (TTS)
         function speak(title, desc, filename) {
-            // Jangan ulangi suara jika objek masih sama
             if (lastSpoken === filename) return;
-
             lastSpoken = filename;
-            speech.cancel(); // Stop suara sebelumnya
 
+            speech.cancel();
             const u = new SpeechSynthesisUtterance(`${title}. ${desc}`);
-            u.lang = 'id-ID'; // Bahasa Indonesia
+            u.lang = 'id-ID';
             speech.speak(u);
         }
     </script>

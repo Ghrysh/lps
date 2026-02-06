@@ -10,53 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class VisitorController extends Controller
 {
-    // --- HALAMAN AUTH ---
-    public function loginForm()
-    {
-        if (Auth::check()) return redirect()->route('visitor.index');
-        return view('visitor.login');
-    }
-
-    public function loginPost(Request $request)
-    {
-        $request->validate(['name' => 'required', 'phone' => 'required']);
-
-        // Format Email dummy dari No HP
-        $email = $request->phone . '@visitor.local';
-
-        // Cari user, atau buat jika belum ada
-        $user = User::firstOrCreate(
-            ['email' => $email], // Cek berdasarkan ini
-            [
-                'name' => $request->name,
-                'password' => Hash::make($request->phone),
-                'role' => 'visitor'
-            ]
-        );
-
-        // Login user tersebut
-        Auth::login($user);
-
-        // LOGIKA PENENTU ARAH:
-        // Jika user ini baru saja dibuat di database (User Baru) -> Ke Video
-        if ($user->wasRecentlyCreated) {
-            return redirect()->route('visitor.video');
-        }
-
-        // Jika user ini sudah ada sebelumnya (User Lama) -> Langsung Dashboard
-        return redirect()->route('visitor.index');
-    }
-
-    public function videoStep()
-    {
-        if (!Auth::check()) return redirect()->route('visitor.login');
-        return view('visitor.video');
-    }
-
-    public function videoFinish()
-    {
-        return redirect()->route('visitor.index');
-    }
 
     // --- FITUR UTAMA ---
     public function index()
@@ -76,15 +29,49 @@ class VisitorController extends Controller
         ]);
     }
 
-    public function scanQR()
-    {
-        return view('visitor.scan-qr');
-    }
-
     public function scanAR()
     {
         return view('visitor.scan-ar');
     }
+
+    public function scan()
+    {
+        return view('visitor.scan-qr'); // kamera QR
+    }
+
+
+    public function scanQR(Request $request)
+    {
+        $type  = $request->query('type');
+        $token = $request->query('token');
+        $id    = $request->query('id');
+
+        if (! $type) {
+            abort(404, 'QR tidak valid');
+        }
+
+        switch ($type) {
+
+            case 'login':
+                return redirect()->route('visitor.login', $token);
+
+            case 'minigame':
+                return redirect('/minigame/scan/' . $token);
+
+            case 'asset':
+                return response()->json([
+                    'asset_id' => $id,
+                    'message'  => 'Asset ditemukan'
+                ]);
+
+            case 'map':
+                return redirect()->route('visitor.map');
+
+            default:
+                abort(404, 'QR tidak dikenali');
+        }
+    }
+
 
     // --- API HANDLER ---
 
@@ -135,18 +122,31 @@ class VisitorController extends Controller
 
     public function apiAssetDetail(Request $request)
     {
-        // Logic AR: Mengembalikan data dummy/database aset
-        // Idealnya Anda query ke DB Asset berdasarkan $request->filename
+        
+        $asset = \App\Models\Gallery::where('image_path', $request->filename)->first();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'title' => 'Objek Terdeteksi',
-                'description' => 'Informasi detail mengenai objek ini ditampilkan melalui Augmented Reality.',
-                // Pastikan gambar ini ada di public/assets/
-                'image_url' => asset('assets/ar-overlay-example.png')
-            ]
-        ]);
+        if ($asset) {
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'title' => $asset->title,
+                    'description' => $asset->description ?? 'Tidak ada deskripsi',
+                    'image_url' => asset('assets/gallery/' . $asset->image_path)
+                ]
+            ]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Asset tidak ditemukan di database'], 404);
+    }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Anda telah berhasil keluar.');
     }
 
     public function map()
@@ -170,6 +170,6 @@ class VisitorController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('visitor.login');
+        return redirect()->route('login');
     }
 }

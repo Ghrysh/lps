@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak QR Code - Labirin Edukasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { background: white; }
+            .card { border: 1px solid #ddd; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-8 no-print">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">QR Code Labirin</h1>
+                <p class="text-slate-500">(Masing-masing bernilai 10 Poin)</p>
+            </div>
+            <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">
+                <i class="fas fa-print"></i> Cetak Halaman
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 md:grid-cols-4 gap-6" id="qr-container">
+            </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('qr-container');
+        const totalPos = 10;
+        const pointsPerPos = 10;
+
+        for (let i = 1; i <= totalPos; i++) {
+            // String Data QR
+            // Format: POINT:10|POS:1
+            // POS:X ditambahkan agar pola QR beda-beda tiap pos
+            const qrData = `POINT:${pointsPerPos}|POS:${i}`;
+            
+            const card = document.createElement('div');
+            card.className = 'card bg-white p-6 rounded-xl shadow-sm flex flex-col items-center justify-center text-center border border-slate-200';
+            
+            card.innerHTML = `
+                <div class="mb-2 font-bold text-slate-400 text-xs tracking-widest">LABIRIN EDUKASI LPS</div>
+                <div id="qrcode-${i}" class="mb-4"></div>
+                <div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold mt-2">
+                    +${pointsPerPos} Poin
+                </div>
+            `;
+
+            container.appendChild(card);
+
+            // Generate QR
+            new QRCode(document.getElementById(`qrcode-${i}`), {
+                text: qrData,
+                width: 150,
+                height: 150,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+    </script>
+</body>
+</html>

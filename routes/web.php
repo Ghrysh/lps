@@ -9,10 +9,15 @@ use App\Http\Controllers\PhotoboothDatasetController;
 use App\Http\Controllers\PhotoboothBajuClickController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
+
 use App\Http\Controllers\VisitorController;
 
+use App\Http\Controllers\QrLoginController;
+use App\Http\Controllers\QrMinigameController;
+
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -66,14 +71,21 @@ Route::middleware('auth')->group(function () {
 // ── GROUP VISITOR ──
 Route::prefix('visitor')->name('visitor.')->group(function () {
     // Auth & Halaman
-    Route::get('/login', [VisitorController::class, 'loginForm'])->name('login');
-    Route::post('/login', [VisitorController::class, 'loginPost'])->name('login.post');
-    Route::get('/video', [VisitorController::class, 'videoStep'])->name('video');
-    Route::post('/video-finish', [VisitorController::class, 'videoFinish'])->name('video.finish');
-    
+    Route::get('/login/{token?}', [QrLoginController::class, 'scanForm'])->name('login'); // token opsional
+    Route::post('/login/{token?}', [QrLoginController::class, 'loginPost'])->name('login.post');
+
+    Route::get('/video', [QrLoginController::class, 'videoStep'])->name('video');
+    Route::post('/video/finish/{token}', [QrLoginController::class, 'finish'])
+        ->name('video.finish');
     // Fitur Utama
     Route::get('/', [VisitorController::class, 'index'])->name('index');
-    Route::get('/scan-qr', [VisitorController::class, 'scanQR'])->name('scan.qr');
+    
+    Route::get('/scan', [VisitorController::class, 'scan'])
+        ->name('scan');          // halaman scanner
+
+    Route::get('/scan-qr', [VisitorController::class, 'scanQR'])
+        ->name('scan.qr');  
+
     Route::get('/scan-ar', [VisitorController::class, 'scanAR'])->name('scan.ar');
 
     // ── API KHUSUS VISITOR (PENTING!) ──
@@ -85,5 +97,26 @@ Route::prefix('visitor')->name('visitor.')->group(function () {
 
     Route::post('/logout', [VisitorController::class, 'logout'])->name('logout');
 });
+
+Route::prefix('minigame')->name('minigame.')->group(function () {
+
+    // MONITOR
+    Route::get('/qr', [QrMinigameController::class, 'index'])->name('qr');
+    Route::get('/status/{token}', [QrMinigameController::class, 'status'])->name('status');
+    Route::get('/play/{token}', [QrMinigameController::class, 'play'])->name('play');
+
+    // HP
+    Route::get('/scan/{token}', [QrMinigameController::class, 'scan'])->name('scan');
+    Route::post('/connect/{token}', [QrMinigameController::class, 'connect'])->name('connect');
+    Route::post('/finish/{token}', [QrMinigameController::class, 'finish'])->name('finish');
+});
+
+
+Route::get('/monitor', [QrLoginController::class, 'index'])->name('monitor.qr');
+Route::get('/monitor/status/{token}', [QrLoginController::class, 'status']);
+Route::get('/monitor/play/{token}', [QrLoginController::class, 'play']);
+
+
+
 
 require __DIR__ . '/auth.php';

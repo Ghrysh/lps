@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'jenis_kelamin',
+        'phone',
         // 'role', // Uncomment jika tabel users Anda punya kolom role
     ];
 

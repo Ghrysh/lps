@@ -85,7 +85,7 @@
 
             {{-- 3. QR SCANNER (Tengah - Lingkaran Besar) --}}
             <div class="relative flex justify-center">
-                <a href="{{ route('visitor.scan.qr') }}"
+                <a href="{{ route('visitor.scan') }}"
                     class="absolute -top-8 w-16 h-16 bg-gradient-to-b from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white border-[5px] border-slate-50 qr-floating-btn transform active:scale-95 transition-all">
                     <i class="fas fa-qrcode text-2xl"></i>
                 </a>

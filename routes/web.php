@@ -7,8 +7,10 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\PhotoboothDatasetController;
 use App\Http\Controllers\PhotoboothBajuClickController;
+use App\Http\Controllers\AdminSliderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\NewsController;
 
 use App\Http\Controllers\VisitorController;
 
@@ -19,6 +21,18 @@ use App\Http\Controllers\QrMinigameController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/news/login', [NewsController::class, 'showRegister'])
+    ->name('news.login');
+
+Route::post('/news/login', [NewsController::class, 'register'])
+    ->name('news.login.post');
+
+Route::get('/news/dashboard', [NewsController::class, 'showDashboard'])
+    ->name('news.dashboard');
+
+Route::get('/news/slider', [NewsController::class, 'slider'])
+    ->name('news.slider');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -43,6 +57,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/scan-points', [PointController::class, 'index'])->name('points.scan');
     // Route untuk memproses point dari QR
     Route::post('/process-points', [PointController::class, 'process'])->name('points.process');
+
+    Route::resource('slider', AdminSliderController::class);
 });
 
 Route::middleware('auth')->group(function () {
@@ -79,12 +95,12 @@ Route::prefix('visitor')->name('visitor.')->group(function () {
         ->name('video.finish');
     // Fitur Utama
     Route::get('/', [VisitorController::class, 'index'])->name('index');
-    
+
     Route::get('/scan', [VisitorController::class, 'scan'])
         ->name('scan');          // halaman scanner
 
     Route::get('/scan-qr', [VisitorController::class, 'scanQR'])
-        ->name('scan.qr');  
+        ->name('scan.qr');
 
     Route::get('/scan-ar', [VisitorController::class, 'scanAR'])->name('scan.ar');
 

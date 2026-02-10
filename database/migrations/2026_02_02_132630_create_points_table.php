@@ -8,17 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('points', function (Blueprint $blueprint) {
-            $blueprint->id();
-            // Menggunakan foreignUuid karena relasinya berasal dari UUID
-            $blueprint->foreignUuid('visitor_id')
-                ->constrained('visitors')
-                ->onDelete('cascade');
+        Schema::create('points', function (Blueprint $table) {
+            $table->id();
 
-            // Kolom nilai (bisa integer atau decimal tergantung kebutuhan)
-            $blueprint->integer('nilai')->default(0);
+            // PERBAIKAN: Gunakan foreignUuid karena tabel users menggunakan UUID
+            $table->foreignUuid('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
 
-            $blueprint->timestamps();
+            $table->integer('nilai')->default(0);
+            
+            // Kolom ini wajib ada agar controller VisitorController tidak error
+            // (Untuk menyimpan data seperti "POS 1", "POS 2", dll)
+            $table->string('keterangan')->nullable();
+
+            $table->timestamps();
         });
     }
 
